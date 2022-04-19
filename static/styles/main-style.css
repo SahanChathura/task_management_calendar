@@ -1,0 +1,122 @@
+@import "https://fonts.googleapis.com/css";
+
+body{
+    font-family: 'Poppins',sans-serif;
+    background-color: rgba(236, 236, 236, 0.918);
+    overflow: hidden;
+}
+
+.imageWrapper{
+
+    background-size: 70vh, 100vw;
+    background-image: url("imgs/main-logo-transparent.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-blend-mode: overlay;
+}
+
+.jubotron-x1.p-3{
+    background-color: #d4d4d4b0;
+    /*box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.267);*/
+    -webkit-box-shadow: 0px 5px 11px 5px rgba(0, 0, 0, 0.103);
+    box-shadow: 0px 5px 11px 5px rgba(0, 0, 0, 0.137);
+
+}
+.text-center h1{
+    color: rgba(2, 140, 219, 0.986);
+    text-shadow: -4px 2px 6px rgba(2, 139, 219, 0.596);
+    outline-width: medium;
+    font-weight: bold;
+    font-variant: small-caps;
+
+}
+
+.jumbotron{
+    background-color:#eeeeeef1;
+    box-shadow: 1px -2px 10px rgba(0, 0, 0, 0.26);
+    height: 85vh;
+}
+
+
+.fc-left h2{
+    font-weight: bold;
+    color: #585858;
+}
+.fc-row.fc-widget-header{
+    background-color: #eeeeeeb0;
+    font-size: 20px;
+
+}
+
+.fc-day-header{
+    color: rgb(8, 147, 202);
+}
+
+#tableid tbody{
+    display: block;
+    height: 100vh;
+    overflow: auto;
+    font-size: 19px;
+    font-weight: bold;
+
+}
+
+
+.card-body h5{
+    font-weight:bold ;
+}
+
+#cardListId{
+    height: 85vh;
+    overflow-y: auto;
+}
+
+#fullpage{
+    height: 100%;
+}
+.card:hover{
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.06);
+    /* color: rgb(18, 196, 250); */
+    /* background-color: rgba(168, 168, 168, 0.397); */
+    font-feature-settings: "ital";
+}
+.card{
+border-radius: 10px;
+}
+#pendingModalBody{
+    height: 75vh;
+    overflow-y: auto;
+}
+
+
+svg text {
+  font-family: Lora;
+  letter-spacing: 10px;
+  stroke: #000000;
+  font-size: 47px;
+  font-weight: 700;
+  stroke-width: 2;
+
+  animation: textAnimate 3s infinite alternate;
+
+}
+svg{
+  overflow: visible;
+}
+
+@keyframes textAnimate {
+  0% {
+    stroke-dasharray: 30 50%;
+    stroke-dashoffset:  20%;
+    fill:hsl(210, 100%, 40%)
+
+  }
+
+  100% {
+    stroke-dasharray: 50% 30;
+    stroke-dashoffstet: -20%;
+    fill: hsla(210, 100%, 15%,50%)
+  }
+
+}
