@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.min.css" rel="stylesheet"/> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.print.css" rel="stylesheet" media="print"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/javaScript.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main-style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/fullcalendar.css')}}">
+
+          <!-- sweet Alert Link -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <title>Event Calendar</title>
+  <style>
+      i:hover{
+        color: #858a8c;
+      }
+
+      /*sidebar in table view*/
+ .sidebar {
+
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #919699;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 16px;
+  text-decoration: none;
+}
+
+.sidebar a.active {
+  background-color: #026dbf;
+  color: white;
+}
+
+.sidebar a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+
+div.content {
+  margin-left: 200px;
+  /*padding: 1px 16px;*/
+  height: 1000px;
+}
+
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+}
+
+
+
+    </style>
+
+  </head>
+
+<body>
+
+  <div class="jubotron-x1 p-3">
+    <div class="row">
+      <div class="col-md-3">
+          <i class="fas fa-bars fa-3x" id="menu" onclick="tableList('600')"></i>
+         <i class="fas fa-times fa-3x"  id="home" style="display: none;"></i>
+        <div class="digital-clock">00:00:00</div>
+      </div>
+      <div class="col-md-6">
+        <div class="text-center">
+<!--          <h1>National Institute of Education</h1>-->
+               <div class="patterns">
+            <svg width="100%" height="10vh">
+              <rect x="0" y="0" width="100%" height="100%" fill="url(#polka-dots)"> </rect>
+
+           <text x="50%" y="60%"  text-anchor="middle"  >
+             National Institute of Education
+           </text>
+           </svg>
+          </div>
+
+        </div>
+      </div>
+      <div class="col-md-3 pr-5 m-auto text-right">
+          <input type="hidden" id="pendinghidden" name="pendinghidden" value="{{accessToken}}">
+           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#pendingMeetingModal" onclick="pendingRequest()">
+          Request <span id="pendCount"  class="badge badge-light"></span>
+            </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addMeetingModel">Add New Meeting</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" onclick="window.location.href='https://task.nie.ac.lk/logout';">Log Out</button>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div id="fullpage" class="container-fluid">
+    <!-- <div class="imageWrapper"> -->
+      <div class="row">
+        <div class="jumbotron col-6 ml-auto mr-auto imageWrapper">
+          <div class="container">
+            <div id="calendar"></div>
+          </div>
+        </div>
+        <div id="cardListId" class="jumbotron col-5 mr-auto pt-5 ">
+<!--          meeting Details here-->
+
+        </div>
+      </div>
+    <!-- </div> -->
+  </div>
+
+  <!-- Add Meeting Modal Start -->
+  <div class="modal fade" id="addMeetingModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <h5 class="modal-title" id="exampleModalLabel1">Add New Meeting</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+    <div class="container">
+          <form action="{{url_for('addMeeting',accessToken=accessToken)}}" method="POST" enctype="multipart/form-data" class="form-horizontal">
+            <div class="form-group col-md-12">
+              <label for="place">Meeting Name</label>
+              <input type="text" class="form-control" id="meetingName1" name="meetingName" placeholder="Enter Meeting Name" required="">
+            </div>
+            <div class="form-group col-md-12">
+              <label for="date">Date</label>
+              <input type="date" class="form-control" id="date" name="date" required="">
+            </div>
+            <div class="form-group col-md-12">
+              <label for="place">Place</label>
+              <input type="text" class="form-control" id="place2" name="place" placeholder="Enter Place" required="">
+            </div>
+            <div class="form-row col-md-12 ">
+              <div class="form-group col-md-6">
+                <label for="startTime">Start Time</label>
+                <input type="time" class="form-control" id="meetingName2" name="Time" required="">
+              </div>
+              <!-- <div class="col"></div> -->
+              <div class="form-group col-md-6">
+                <label for="endtime">End Time</label>
+                <input type="time" class="form-control" id="endTime2" name="endtime" required="">
+              </div>
+            </div>
+            <div class="form-group col-md-12">
+              <label for="place">Description</label>
+              <textarea class="form-control" id="description2" name="Description" rows="3" placeholder="Description here..."></textarea>
+            </div>
+
+             <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+          </form>
+ </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Add Meeting Modal End -->
+
+
+  <!-- Update Meeting Modal Start -->
+  <div class="modal fade" id="updateMeetingModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Update Meeting</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+          <form action="{{url_for('updateMeeting',accessToken=accessToken)}}" method="POST" enctype="multipart/form-data" class="form-horizontal">
+            <input type="hidden" id="updteid" name="updteid">
+            <div class="form-group col-md-12">
+              <label for="place">Meeting Name</label>
+              <input type="text" class="form-control" id="updatemeetingName1" name="meetingName" placeholder="Enter Meeting Name" required="">
+            </div>
+            <div class="form-group col-md-12">
+              <label for="date">Date</label>
+              <input type="date" class="form-control" id="updatedate" name="date" required="">
+            </div>
+            <div class="form-group col-md-12">
+              <label for="place">Place</label>
+              <input type="text" class="form-control" id="updatedaplace2" name="place" placeholder="Enter Place" required="">
+            </div>
+            <div class="form-row col-md-12 ">
+              <div class="form-group col-md-6">
+                <label for="startTime">Start Time</label>
+                <input type="time" class="form-control" id="updatemeetingtime" name="Time" required="">
+              </div>
+              <!-- <div class="col"></div> -->
+              <div class="form-group col-md-6">
+                <label for="endtime">End Time</label>
+                <input type="time" class="form-control" id="updateendTime2" name="endtime" required="">
+              </div>
+            </div>
+            <div class="form-group col-md-12">
+              <label for="place">Description</label>
+              <textarea class="form-control" id="updatedescription2" name="Description" rows="3" placeholder="Description here..."></textarea>
+            </div>
+
+             <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+          </form>
+ </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Meeting Modal End -->
+
+  <!--Details Showing Modal Start-->
+  <div class="modal fade" id="popupDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 style="font-weight:bold;" class="modal-title" id="exampleModalLongTitle">MEETING DETAILS</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="font-size:x-large; font-weight:bold" >
+              <input type="hidden" id="updatemeetingid" name="updatemeetingid">
+           <input type="hidden" id="updatemeetingdate" name="updatemeetingid">
+                  <div class="col-md-12">
+              <label class="control-label" id="meetingName">
+<!--               Meeting Name : Meeting 1-->
+                  </label>
+                </div>
+
+                 <div class="col-md-12">
+              <label class="control-label" id="startTime">
+<!--               Start Time : 10.00 AM-->
+                  </label>
+                </div>
+
+          <div class="col-md-12">
+            <label class="control-label" id="endmeetingtime">
+<!--               Start Time : 10.00 AM-->
+                  </label>
+                </div>
+
+
+                  <div class="col-md-12">
+              <label class="control-label" id="place">
+<!--                Place : Lab 1-->
+                  </label>
+                </div>
+
+                  <div class="col-md-12">
+              <label class="control-label" id="description">
+<!--               description  : asasas sas  sas  sas as asa as asa sas as sas sas sa sasa sas as as as a sasja s s ha a svgas  sasha abas-->
+                  </label>
+                </div>
+
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#updateMeetingModel" data-dismiss="modal" onclick="updateDetails()">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+   <!--Details Showing Modal End-->
+
+     <!-- Pending Meeting Modal Start -->
+   <div class="modal fade" id="pendingMeetingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+         <h4 class="modal-title" id="pendingmodel">Pending Meeting</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="pendingModalBody" style="height: 75vh; overflow-y: auto;">
+
+        <!--   content here-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <!-- Pending Meeting Modal End -->
+
+   <!-- Suggest Meeting Modal Start -->
+  <div class="modal fade" id="suggestMeetingModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel5">Suggest a Meeting</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal">
+            <fieldset>
+              <input type="hidden" id="suggestid" name="suggestid">
+              <div class="form-group">
+                <label class="col-md-4 control-label" for="meetingName">Meeting Name</label>
+                <div class="col-md-8">
+                  <input name="suggestname" type="text" id="suggestname" placeholder="Enter Meeting Name" class="form-control input-md" required="">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-4 control-label" for="date">Date</label>
+                <div class="col-md-8">
+                  <input name="textinput" type="date" id="suggestdate"  placeholder="Select Date" class="form-control input-md" required="">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-4 control-label" for="place">Place</label>
+                <div class="col-md-8">
+                  <input name="textinput" type="text" id="suggestplace"  placeholder="Enter Place" class="form-control input-md" required="">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-4 control-label" >Time</label>
+                <div class="col-md-8">
+                  <input  name="textinput" type="time" id="suggesttime" placeholder="Add Time" class="form-control input-md" required="">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-4 control-label" for="description">Description</label>
+                <div class="col-md-8">
+                  <!-- <input id="textinput" name="textinput" type="text" placeholder="Enter Description" class="form-control input-md" required=""> -->
+                  <textarea class="form-control" id="descriptions" rows="3" placeholder="Description here..."></textarea>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="swal({
+              title: 'Suggestion Sent',
+              text: '',
+              icon: 'success',
+              button: 'OK',
+            }); deleteRequest();" data-dismiss="modal">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Suggest Meeting Modal End -->
+
+
+   <!-- table start -->
+   <div id="table2">
+
+   <div class="sidebar col-2">
+
+  <a href="#news" onclick="tableList('01')">January</a>
+  <a href="#contact" onclick="tableList('02')">February</a>
+  <a href="#about" onclick="tableList('03')">March</a>
+  <a href="#about" onclick="tableList('04')">April</a>
+  <a href="#about" onclick="tableList('05')">May</a>
+  <a href="#about" onclick="tableList('06')">June</a>
+  <a href="#about" onclick="tableList('07')">July</a>
+  <a href="#about" onclick="tableList('08')">August</a>
+  <a href="#about" onclick="tableList('09')">September</a>
+  <a href="#about" onclick="tableList('10')">October</a>
+  <a href="#about" onclick="tableList('11')" >November</a>
+  <a href="#about" onclick="tableList('12')">December</a>
+</div>
+
+<div class="content col-11">
+<!--  <table class="table table-hover" id="tableID">-->
+<!--  <thead class="thead-dark">-->
+<!--    <tr>-->
+<!--      <th scope="col">Date</th>-->
+<!--      <th scope="col">Time</th>-->
+<!--      <th scope="col">Meeting</th>-->
+<!--    </tr>-->
+<!--  </thead>-->
+<!--  <tbody id="tbodyID">-->
+
+<!--  </tbody>-->
+<!--</table>-->
+
+     <div class=" custom-table-responsive"  >
+
+        <table class="table" id="tableid">
+          <thead >
+            <tr class="row">
+              <th class="col-4">Date</th>
+              <th class="col-4">Time</th>
+              <th class="col-4">Meeting</th>
+            </tr>
+          </thead>
+
+          <tbody id="tbodyID">
+
+          </tbody>
+
+        </table>
+      </div>
+</div>
+</div>
+   <!-- table end -->
+
+  <script type="text/javascript">
+    $('#calendar').fullCalendar({
+      themeSystem:"bootstrap",
+      selectable: true,
+      height:550,
+      select: function(start, end, jsEvent, view) {
+        var allDay = !start.hasTime() && !end.hasTime();
+        console.log(["Selected Date : " + moment(start).format('YYYY-MM-DD')]);
+        date = moment(start).format('YYYY-MM-DD');
+        showmeeting(date);
+        }
+    });
+
+     // table section
+
+        $(document).ready(function() {
+          $('#menu').click(function() {
+            $('#fullpage').hide();
+            $('#table2').show();
+            $('#menu').hide();
+            $('#home').show();
+       });
+
+          $('#home').click(function() {
+            $('#table2').hide();
+            $('#fullpage').show();
+            $('#home').hide();
+            $('#menu').show();
+
+
+          });
+
+
+
+
+});
+
+
+    function loadTable(row, index){
+           var today = new Date();
+           var dd = String(today.getDate()).padStart(2, '0');
+           var mm = String(today.getMonth() + 1).padStart(2, '0');
+           var yyyy = today.getFullYear();
+           today = yyyy + '-' + mm + '-' + dd;
+<!--           console.log(today);-->
+           var date = row['date'];
+           var dt = new Date();
+           var currentTime = dt.getHours() + ":" + dt.getMinutes();
+<!--           console.log(currentTime);-->
+           var changemins;
+           if (today == date){
+                console.log("date equal");
+                var dt = new Date();
+                var currentTime;
+                if(dt.getMinutes() < 10){
+<!--                    console.log("minits less than 10");-->
+                    changemins = "0"+dt.getMinutes();
+                    currentTime = dt.getHours() + ":" + changemins;
+
+                }
+                else{
+                    currentTime = dt.getHours() + ":" + dt.getMinutes();
+
+                }
+                var meetingtime =row['endtime'];
+<!--                console.log(currentTime,meetingtime);-->
+                str1 = currentTime;
+                str2 = meetingtime;
+                str1 =  str1.split(':');
+                str2 =  str2.split(':');
+                currentSeconds = parseInt(str1[0] * 3600 + str1[1] * 60);
+                meetingSeconds = parseInt(str2[0] * 3600 + str2[1] * 60);
+                if(currentSeconds > meetingSeconds){
+<!--                    console.log("past meeting");-->
+                }
+                else{
+                     var id = row['id'];
+                     $('#cardListId').append("<div class='container'><div class='card w-100'> <div class='card-body' data-toggle='modal' data-target='#popupDetails' onclick='moredetails("+ id +")'><div class='card-header'><div class='row'><div class='col-5'><h5>Start Time: "+ row['time'] +"</h5></div><div class='col-3'></div><div class='col-4'><h5>End Time: "+ row['endtime'] +"</h5></div></div></div><hr><p style='font-size: x-large;font-weight: bold;' class='card-text'>"+ row['meetingName'] +"</p></div><div class='card-footer text-right'><button type='button' class='btn btn-outline-danger' onclick='deleteMeeting("+ id +")'>Delete</button></div></div></div><br>");
+                }
+
+           }
+           else{
+                var id = row['id'];
+                var chkDate = row['endtime'];
+                $('#cardListId').append("<div class='container'><div class='card w-100'> <div class='card-body' data-toggle='modal' data-target='#popupDetails' onclick='moredetails("+ id +")'><div class='card-header'><div class='row'><div class='col-5'><h5>Start Time: "+ row['time'] +"</h5></div><div class='col-3'></div><div class='col-4'><h5>End Time: "+ row['endtime'] +"</h5></div></div></div><hr><p style='font-size: x-large;font-weight: bold;' class='card-text'>"+ row['meetingName'] +"</p></div><div class='card-footer text-right'><button type='button' class='btn btn-outline-danger' onclick='deleteMeeting("+ id +")'>Delete</button></div></div></div><br>");
+           }
+    }
+
+    function showmeeting(date){
+
+<!--        console.log(date);-->
+        $.get('https://task.nie.ac.lk/showMeeting?dates='+date,function(data)
+    {
+<!--    console.log(data);-->
+    $(cardListId).empty();
+    data.meetings.forEach(loadTable);
+    });
+    }
+
+    <!--moreDetails for loop-->
+    function loadData(row, index){
+    $("#updatemeetingid").val(row['id']);
+    $("#updatemeetingdate").val(row['date']);
+    $("#meetingName").append("Meeting Name : "+ row['meetingName'] +"");
+    $("#startTime").append("Start Time : "+ row['time'] +"");
+    $("#endmeetingtime").append("End Time : "+ row['endtime'] +"");
+    $("#place").append("Place : "+ row['place'] +"");
+<!--    $("#description").append("Description  : "\n+ row['description'] +"");-->
+    $("#description").append("Description  : " + linkify(row['description']) +"");
+
+    }
+
+    <!--    moreDetails-->
+    function moredetails(id){
+        $("#updatemeetingid").empty();
+        $("#meetingName").empty();
+        $("#startTime").empty();
+        $("#place").empty();
+        $("#description").empty();
+        $("#endmeetingtime").empty();
+<!--        console.log(id);-->
+        $.get('https://task.nie.ac.lk/allDetails?id='+id, function(data)
+    {
+
+    console.log(data);
+    data.meetings.forEach(loadData);
+
+    });
+    }
+
+    function deleteMeeting(id){
+<!--      alert(id);-->
+      var token = $("#pendinghidden").val();
+      console.log(token);
+      $.get('https://task.nie.ac.lk/delete/'+ token +'?id='+id);
+      location.reload();
+    }
+
+    function updatedata(row, index){
+        $("#updteid").val(row['id']);
+        $("#updatemeetingName1").val(row['meetingName']);
+        $("#updatedate").val(row['date']);
+        $("#updatedaplace2").val(row['place']);
+        $("#updatemeetingtime").val(row['time']);
+        $("#updateendTime2").val(row['endtime']);
+        $("#updatedescription2").val(row['description']);
+    }
+
+
+    function updateDetails(){
+      var id = $("#updatemeetingid").val();
+      $.get('https://task.nie.ac.lk/allDetails?id='+id, function(data)
+      {
+
+<!--      console.log(data);-->
+      data.meetings.forEach(updatedata);
+
+      });
+    }
+
+
+<!--suggestData for loop-->
+
+    function suggestData(row, index){
+        $("#suggestid").val(row ['id']);
+        $("#suggestname").val(row ['meetingName']);
+        $("#suggestdate").val(row['date']);
+        $("#suggestplace").val(row['place']);
+        $("#suggesttime").val(row['time']);
+        }
+
+        <!--    suggestData-->
+    function suggestingdetails(id){
+<!--            console.log(id);-->
+            $("#suggestid").empty();
+            $("#suggestname").empty();
+            $("#suggestdate").empty();
+            $("#suggestplace").empty();
+            $("#suggesttime").empty();
+<!--            console.log(id);-->
+            $.get('https://task.nie.ac.lk/detailsSuggesting?id='+id, function(data)
+        {
+
+<!--        console.log(data);-->
+        data.meetings.forEach(suggestData);
+
+        });
+      }
+
+<!--pending Meeting Root Function Start-->
+
+     function allPendingRequest(row, index){
+<!--        console.log(row['id']);-->
+        var id = row['id'];
+        $('#pendingModalBody').append("<div class='container' ><div class='card w-100' ><div class='card-body'><div class='card-header'><div class='row'><div class='col-4'> <h5>Date: "+ row['date'] +"</h5> </div><div class='col-4'></div><div class='col-4'> <h5>Time: "+ row['time'] +"</h5></div></div></div><hr><h6 style='font-weight: bold;'>Topic : "+ row['meetingName'] +"</h6><h6 style='font-weight: bold;'>Time : "+ row['time'] +" - "+ row['endtime'] +"<h6/><h6 style='font-weight: bold;'>Description :</h6><p class='card-text'>"+ row['description'] +"</p></div><div class='card-footer'><div class='row'><div class='col-8'><h6 style='font-weight: bold;'>"+ row['userName'] +"</h6></div><div class='col-4 text-right'><button type='button' id='mybuttn1' class='btn btn-outline-primary' onclick='approvemeeting("+ id +")'>Approve</button>&nbsp;<button type='button' class='btn btn-outline-danger text-right' data-toggle='modal' data-target='#suggestMeetingModel' data-dismiss='modal'  onclick ='suggestingdetails("+ id +")'>Delete</button></div></div></div></div></div><br>");
+    }
+
+    function pendingRequest(){
+        var token = $("#pendinghidden").val();
+
+        $.get('https://task.nie.ac.lk/allPendingMeeting', function(data)
+        {
+<!--        console.log(data);-->
+        $("#pendingModalBody").empty();
+        data.meetings.forEach(allPendingRequest);
+        });
+        pendingCount();
+    }
+    <!--pending Meeting Root Function End-->
+
+<!--    count pending reqwest-->
+        var pendingtotal = 0;
+        function allPendingCount(row, index){
+        pendingtotal = pendingtotal + 1
+<!--        console.log(pendingtotal);-->
+        $("#pendCount").empty();
+        $('#pendCount').append(pendingtotal);
+
+
+        }
+
+        function pendingCount(){
+        var token = $("#pendinghidden").val();
+
+        $.get('https://task.nie.ac.lk/allPendingMeeting', function(data)
+        {
+        pendingtotal = 0;
+<!--        console.log(data);-->
+        $("#pendCount").empty();
+        data.meetings.forEach(allPendingCount);
+        });
+
+    }
+
+<!--    count pending reqwest-->
+
+    function alltableList(row, index){
+        var id = row['id'];
+        $('#tbodyID').append(" <tr class='row'><td class='col-4'>"+ row['date'] +"</td><td class='col-4'>"+ row['time'] +" - "+ row['endtime'] +"</td><td class='col-4'>"+ row['meetingName'] +"<small class='d-block'>"+ row['place'] +"</small></td></tr><tr class='spacer'><td colspan='100'></td></tr>");
+    }
+
+   function tableList(month){
+    $.get('https://task.nie.ac.lk/tblAllMeetings?monthNum='+month, function(data)
+    {
+    console.log(data);
+    $("#tbodyID").empty();
+    data.meetings.forEach(alltableList);
+    });
+    }
+
+
+
+    function approvemeeting(id){
+       console.log("a");
+
+      var token = $("#pendinghidden").val();
+      $.get('https://task.nie.ac.lk/approveRequest/'+ token +'?id='+id , function(data){
+         pendingRequest();
+<!--         console.log("b");-->
+
+      });
+
+    }
+
+    function deleteRequest(){
+       var id = $("#suggestid").val();
+       var name = $("#suggestname").val();
+       var date = $("#suggestdate").val();
+       var time = $("#suggesttime").val();
+       var description = $("#descriptions").val();
+       var splace = $("#suggestplace").val();
+       var token = $("#pendinghidden").val();
+<!--       console.log("sahan");-->
+<!--       console.log(date);-->
+
+<!--       $.get('http://127.0.0.1:5000/deleteRequest/'+token +'?id='+id, function(data){-->
+<!--       pendingRequest();-->
+<!--       });-->
+<!--      const url = 'http://127.0.0.1:5000/test';-->
+      const data={
+          id:id,
+          mname:name,
+          mtime:time,
+          mdate:date,
+          splace:splace,
+          description:description
+      }
+      $.post('https://task.nie.ac.lk/deleteRequest/'+token,data, function(data,status){
+<!--            console.log("ok");-->
+      });
+}
+
+    function refreshPage() {
+      location.reload();
+    }
+
+    function linkify(inputText) {
+    var replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+    //URLs starting with http://, https://, or ftp://
+    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+
+    //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
+
+    //Change email addresses to mailto:: links.
+    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+    replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
+
+    return replacedText;
+    }
+
+
+
+    $(document).ready(function() {
+      setInterval( function() {
+        var hours = new Date().getHours();
+        $(".hours").html(( hours < 10 ? "0" : "" ) + hours);
+      }, 1000);
+      setInterval( function() {
+        var minutes = new Date().getMinutes();
+        $(".min").html(( minutes < 10 ? "0" : "" ) + minutes);
+      },1000);
+      setInterval( function() {
+        var seconds = new Date().getSeconds();
+        $(".sec").html(( seconds < 10 ? "0" : "" ) + seconds);
+      },1000);
+        var today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      var yyyy = today.getFullYear();
+      today = yyyy + '-' + mm + '-' + dd;
+<!--      console.log(today);-->
+      showmeeting(today);
+      setInterval(function(){showmeeting(today),pendingCount()}, 30000);
+<!--      setInterval(function(){pendingCount()}, 3000);-->
+
+
+
+    });
+
+  </script>
+  </body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.min.css" rel="stylesheet"/> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.print.css" rel="stylesheet" media="print"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/javaScript.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main-style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/fullcalendar.css')}}">
+
+    <title>Event Calendar</title>
+
+
+  </head>
+
+<body>
+
+  <div class="jubotron-x1 p-3">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="digital-clock">00:00:00</div>
+      </div>
+      <div class="col-md-6">
+        <div class="text-center">
+          <h1>National Institute of Education</h1>
+        </div>
+      </div>
+      <div class="col-md-3 pr-5 m-auto text-right">
+<!--        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addMeetingModel">Add New Meeting</button>-->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="">Log Out</button>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div id="fullpage" class="container-fluid">
+    <!-- <div class="imageWrapper"> -->
+      <div class="row">
+        <div class="jumbotron col-6 ml-auto mr-auto imageWrapper">
+          <div class="container">
+            <div id="calendar"></div>
+          </div>
+        </div>
+        <div id="cardListId" class="jumbotron col-5 mr-auto pt-5 ">
+<!--          meeting Details here-->
+
+        </div>
+      </div>
+    <!-- </div> -->
+  </div>
+
+  <!-- Add Meeting Modal Start -->
+<!--  <div class="modal fade" id="addMeetingModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-lg" role="document">-->
+<!--      <div class="modal-content">-->
+<!--        <div class="modal-header">-->
+<!--          <h5 class="modal-title" id="exampleModalLabel1">Add New Meeting</h5>-->
+<!--          <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--            <span aria-hidden="true">&times;</span>-->
+<!--          </button>-->
+<!--        </div>-->
+<!--        <div class="modal-body">-->
+<!--          <form action="{{url_for('addMeeting',accessToken=accessToken)}}" method="POST" enctype="multipart/form-data" class="form-horizontal">-->
+<!--            <fieldset>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Meeting Name</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput1" name="meetingName" type="text" placeholder="Enter Meeting Name" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Date</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput2" name="date" type="date" placeholder="Select Date" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Place</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput3" name="place" type="text" placeholder="Enter Place" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Time</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput4" name="Time" type="time" placeholder="Add Time" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Description</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  &lt;!&ndash; <input id="textinput" name="textinput" type="text" placeholder="Enter Description" class="form-control input-md" required=""> &ndash;&gt;-->
+<!--                  <textarea class="form-control" id="description1" name="Description" rows="3" placeholder="Description here..."></textarea>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </fieldset>-->
+
+<!--          <div class="modal-footer">-->
+<!--            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--            <button type="submit" class="btn btn-primary">Save Changes</button>-->
+<!--          </div>-->
+<!--              </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!-- Add Meeting Modal End -->
+
+
+  <!-- Update Meeting Modal Start -->
+<!--  <div class="modal fade" id="updateMeetingModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-lg" role="document">-->
+<!--      <div class="modal-content">-->
+<!--        <div class="modal-header">-->
+<!--          <h5 class="modal-title" id="exampleModalLabel">Update Meeting</h5>-->
+<!--          <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--            <span aria-hidden="true">&times;</span>-->
+<!--          </button>-->
+<!--        </div>-->
+<!--        <div class="modal-body">-->
+<!--          <form class="form-horizontal">-->
+<!--            <fieldset>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Meeting Name</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput11" name="textinput" type="text" placeholder="Enter Meeting Name" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Date</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput22" name="textinput" type="date" placeholder="Select Date" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Place</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput33" name="textinput" type="text" placeholder="Enter Place" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Time</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  <input id="textinput" name="textinput" type="time" placeholder="Add Time" class="form-control input-md" required="">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label class="col-md-4 control-label" for="textinput">Description</label>-->
+<!--                <div class="col-md-8">-->
+<!--                  &lt;!&ndash; <input id="textinput" name="textinput" type="text" placeholder="Enter Description" class="form-control input-md" required=""> &ndash;&gt;-->
+<!--                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Description here..."></textarea>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </fieldset>-->
+<!--          </form>-->
+<!--          <div class="modal-footer">-->
+<!--            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--            <button type="button" class="btn btn-primary">Update</button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+  <!-- Update Meeting Modal End -->
+
+  <!--Details Showing Modal Start-->
+  <div class="modal fade" id="popupDetails" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Meeting Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                  <div class="col-md-12">
+              <label class="control-label" id="meetingName">
+<!--               Meeting Name : Meeting 1-->
+                  </label>
+                </div>
+
+                 <div class="col-md-12">
+              <label class="control-label" id="startTime">
+<!--               Start Time : 10.00 AM-->
+                  </label>
+                </div>
+
+
+                  <div class="col-md-12">
+              <label class="control-label" id="place">
+<!--                Place : Lab 1-->
+                  </label>
+                </div>
+
+                  <div class="col-md-12">
+              <label class="control-label" id="description">
+<!--               description  : asasas sas  sas  sas as asa as asa sas as sas sas sa sasa sas as as as a sasja s s ha a svgas  sasha abas-->
+                  </label>
+                </div>
+
+
+
+        </div>
+        <div class="modal-footer">
+<!--          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+          <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#updateMeetingModel" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+   <!--Details Showing Modal End-->
+
+  <script type="text/javascript">
+    $('#calendar').fullCalendar({
+      themeSystem:"bootstrap",
+      selectable: true,
+      height:550,
+      select: function(start, end, jsEvent, view) {
+        var allDay = !start.hasTime() && !end.hasTime();
+        console.log(["Selected Date : " + moment(start).format('YYYY-MM-DD')]);
+        date = moment(start).format('YYYY-MM-DD');
+        showmeeting(date);
+        }
+    });
+
+    function loadTable(row, index){
+           var id = row['id']
+           $('#cardListId').append("<div class='container'><div class='card w-100'> <div class='card-body' data-toggle='modal' data-target='#popupDetails' onclick='moredetails("+ id +")'> <h5 class='card-header'>"+ row['time'] +"</h5> <hr> <p class='card-text'>"+ row['meetingName'] +"</p></div><div class='card-footer text-right'></div></div></div><br>");
+    }
+
+    function showmeeting(date){
+        console.log(date);
+        $(cardListId).empty();
+        $.get('http://192.248.70.131:5000/showMeeting?dates='+date, function(data)
+    {
+    console.log(data);
+    data.meetings.forEach(loadTable);
+    });
+    }
+
+    <!--moreDetails for loop-->
+    function loadData(row, index){
+    $("#meetingName").append("Meeting Name : "+ row['meetingName'] +"");
+    $("#startTime").append("Start Time : "+ row['time'] +"");
+    $("#place").append("Place : "+ row['place'] +"");
+    $("#description").append("Description  : "+ row['description'] +"");
+
+    }
+
+    <!--    moreDetails-->
+    function moredetails(id){
+        $("#meetingName").empty();
+        $("#startTime").empty();
+        $("#place").empty();
+        $("#description").empty();
+        console.log(id);
+        $.get('http://192.248.70.131:5000/allDetails?id='+id, function(data)
+    {
+
+    console.log(data);
+    data.meetings.forEach(loadData);
+
+    });
+    }
+
+
+    $(document).ready(function() {
+      setInterval( function() {
+        var hours = new Date().getHours();
+        $(".hours").html(( hours < 10 ? "0" : "" ) + hours);
+      }, 1000);
+      setInterval( function() {
+        var minutes = new Date().getMinutes();
+        $(".min").html(( minutes < 10 ? "0" : "" ) + minutes);
+      },1000);
+      setInterval( function() {
+        var seconds = new Date().getSeconds();
+        $(".sec").html(( seconds < 10 ? "0" : "" ) + seconds);
+      },1000);
+        var today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      var yyyy = today.getFullYear();
+      today = yyyy + '-' + mm + '-' + dd;
+      console.log(today);
+      showmeeting(today);
+    });
+  </script>
+  </body>
+</html>
